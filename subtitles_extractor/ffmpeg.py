@@ -9,8 +9,10 @@ def save_subtitles(filename: str, forced=False, langs=None):
     langs = langs or ["*"]
     ext_exclude = tuple(os.extsep + ext for ext in (EXT, "nfo", "txt"))
     if filename.endswith(ext_exclude) or "-TdarrCacheFile-" in filename:
+        print(f"Skipping: {filename}")
         return
 
+    print(f"Processing: {filename}")
     subtitles = ffprobe.subtitles(filename)
     if subtitles is None:
         return
