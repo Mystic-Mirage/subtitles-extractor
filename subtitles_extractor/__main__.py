@@ -10,11 +10,12 @@ def run(
     libraries: list[str],
     sleep: int,
     forced: bool,
+    skip_srt: bool,
     langs: list[str],
     data_dir: Path,
 ):
     cache_file = data_dir / "filelist.cache"
-    p_hash = get_hash(forced, langs)
+    p_hash = get_hash(forced, skip_srt, langs)
     cache = read_cache(cache_file, p_hash)
 
     while True:
@@ -39,11 +40,12 @@ def main():
     libraries = os.environ.get("SUBTITLES_EXTRACTOR_LIBRARIES", "").split(";")
     sleep = int(os.environ.get("SUBTITLES_EXTRACTOR_SLEEP", 1))
     forced = bool(int(os.environ.get("SUBTITLES_EXTRACTOR_FORCED_ONLY", 1)))
+    skip_srt = bool(int(os.environ.get("SUBTITLES_EXTRACTOR_SKIP_SRT", 1)))
     langs = os.environ.get("SUBTITLES_EXTRACTOR_LANGUAGES", "*").split(";")
     data_dir = Path(os.environ.get("SUBTITLES_EXTRACTOR_DATA_DIR", "."))
 
     try:
-        run(libraries, sleep, forced, langs, data_dir)
+        run(libraries, sleep, forced, skip_srt, langs, data_dir)
     except KeyboardInterrupt:
         pass
 

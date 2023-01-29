@@ -5,7 +5,7 @@ import sys
 from subtitles_extractor import EXT, ffprobe
 
 
-def save_subtitles(filename: str, forced=False, langs=None):
+def save_subtitles(filename: str, forced=False, skip_srt=False, langs=None):
     langs = langs or ["*"]
     ext_exclude = tuple(os.extsep + ext for ext in (EXT, "nfo", "txt"))
     if filename.endswith(ext_exclude) or "-TdarrCacheFile-" in filename:
@@ -21,8 +21,9 @@ def save_subtitles(filename: str, forced=False, langs=None):
         dst = ffprobe.subtitles_path(filename, data)
 
         if not (
-            (data["codec"] != "subrip" and not data["bitmap"])
+            not data["bitmap"]
             and (forced and data["forced"] or not forced)
+            and (skip_srt and data["codec"] != "subrip" or not skip_srt)
             and ("*" in langs or data["language"] in langs)
         ):
             try:
