@@ -27,7 +27,7 @@ def run(
                     files.add(File(path))
 
         for file in sorted(files - cache):
-            ffmpeg.save_subtitles(file.name, forced, langs)
+            ffmpeg.save_subtitles(file.name, forced, skip_srt, langs)
 
         if cache != files:
             cache = files
