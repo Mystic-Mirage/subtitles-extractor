@@ -5,7 +5,7 @@ import sys
 from subtitles_extractor import EXT, ffprobe
 
 
-def save_subtitles(filename, forced=False, langs=None):
+def save_subtitles(filename: str, forced=False, langs=None):
     langs = langs or ["*"]
     ext_exclude = tuple(os.extsep + ext for ext in (EXT, "nfo", "txt"))
     if filename.endswith(ext_exclude) or "-TdarrCacheFile-" in filename:
@@ -31,14 +31,12 @@ def save_subtitles(filename, forced=False, langs=None):
                 print(f"Unlinked: {dst}")
             continue
 
-        if dst.exists():
-            continue
-
         proc = subprocess.run(
             [
                 "ffmpeg",
                 "-v",
                 "error",
+                "-y",
                 "-i",
                 filename,
                 "-map",

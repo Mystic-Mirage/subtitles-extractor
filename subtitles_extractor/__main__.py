@@ -3,16 +3,36 @@ import time
 from pathlib import Path
 
 from subtitles_extractor import ffmpeg
+from subtitles_extractor.cache import File, get_hash, read_cache, write_cache
 
 
-def run(libraries, sleep, forced, langs):
+def run(
+    libraries: list[str],
+    sleep: int,
+    forced: bool,
+    langs: list[str],
+    data_dir: Path,
+):
+    cache_file = data_dir / "filelist.cache"
+    p_hash = get_hash(forced, langs)
+    cache = read_cache(cache_file, p_hash)
+
     while True:
+        files = set()
         for lib in libraries:
             lib_path = Path(lib)
             for path in lib_path.rglob("*"):
                 if path.is_file():
-                    ffmpeg.save_subtitles(str(path), forced, langs)
-        time.sleep(sleep * 60)
+                    files.add(File(path))
+
+        for file in files - cache:
+            ffmpeg.save_subtitles(file.name, forced, langs)
+
+        if cache != files:
+            cache = files
+            write_cache(cache_file, p_hash, cache)
+
+        time.sleep(sleep)
 
 
 def main():
@@ -20,9 +40,10 @@ def main():
     sleep = int(os.environ.get("SUBTITLES_EXTRACTOR_SLEEP", 1))
     forced = bool(int(os.environ.get("SUBTITLES_EXTRACTOR_FORCED_ONLY", 1)))
     langs = os.environ.get("SUBTITLES_EXTRACTOR_LANGUAGES", "*").split(";")
+    data_dir = Path(os.environ.get("SUBTITLES_EXTRACTOR_DATA_DIR", "."))
 
     try:
-        run(libraries, sleep, forced, langs)
+        run(libraries, sleep, forced, langs, data_dir)
     except KeyboardInterrupt:
         pass
 

@@ -4,11 +4,12 @@ import subprocess
 import sys
 from pathlib import Path
 from pprint import pprint
+from typing import Any, Dict, Optional
 
 from subtitles_extractor import EXT
 
 
-def subtitles(filename):
+def subtitles(filename: str) -> Optional[Dict[int, Dict[str, Any]]]:
     proc = subprocess.run(
         [
             "ffprobe",
@@ -50,7 +51,7 @@ def subtitles(filename):
     return data
 
 
-def subtitles_path(filename, data):
+def subtitles_path(filename: str, data: Dict[str, Any]):
     lang = data["language"]
     sdh = "sdh" if data["sdh"] else None
     forced = "forced" if data["forced"] else None
