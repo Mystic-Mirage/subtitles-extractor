@@ -32,7 +32,7 @@ def run(
             cache = files
             write_cache(cache_file, p_hash, cache)
 
-        time.sleep(sleep)
+        time.sleep(sleep * 60)
 
 
 def main():
