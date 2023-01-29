@@ -33,7 +33,10 @@ def read_cache(cache_file: Path, p_hash: str):
         if p_hash != c_hash:
             raise ValueError
     except (OSError, EOFError, ValueError, pickle.UnpicklingError):
+        print("Cache (re)initialized")
         cache = set()
+    else:
+        print(f"Cache size: {len(cache)}")
 
     return cache
 
