@@ -45,5 +45,4 @@ def read_cache(cache_file: Path, p_hash: str):
 
 
 def write_cache(cache_file: Path, p_hash: str, cache: set[File]):
-    print(f"Cache updated: {len(cache)}")
     cache_file.write_bytes(pickle.dumps((p_hash, cache)))
