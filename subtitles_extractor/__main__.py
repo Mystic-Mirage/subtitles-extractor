@@ -23,7 +23,10 @@ def run(
         for lib in libraries:
             lib_path = Path(lib)
             for path in lib_path.rglob("*"):
-                if path.is_file():
+                if (
+                    path.is_file()
+                    and (time.time() - path.stat().st_mtime) > 300
+                ):
                     files.add(File(path))
 
         for file in sorted(files - cache):
