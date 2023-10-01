@@ -2,10 +2,16 @@ import os
 import subprocess
 import sys
 
-from subtitles_extractor import EXT, ffprobe
+from subtitles_extractor import EXT, ffprobe, formatting
 
 
-def save_subtitles(filename: str, forced=False, skip_srt=False, langs=None):
+def save_subtitles(
+    filename: str,
+    forced=False,
+    skip_srt=False,
+    strip_formatting=False,
+    langs=None,
+):
     langs = langs or ["*"]
     ext_exclude = tuple(os.extsep + ext for ext in (EXT, "nfo", "txt"))
     if filename.endswith(ext_exclude) or "-TdarrCacheFile-" in filename:
@@ -44,7 +50,9 @@ def save_subtitles(filename: str, forced=False, skip_srt=False, langs=None):
                 filename,
                 "-map",
                 f"0:{idx}",
-                str(dst),
+                "-f",
+                "srt",
+                "pipe:1",
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -55,7 +63,14 @@ def save_subtitles(filename: str, forced=False, skip_srt=False, langs=None):
                 f"FFMPEG error: {filename}: " + proc.stderr.decode(),
                 file=sys.stderr,
             )
-        elif dst.exists():
+
+        elif proc.stdout:
+            subs = proc.stdout.decode("latin-1")
+
+            if strip_formatting:
+                subs = formatting.strip(subs)
+
+            dst.write_text(subs, encoding="latin-1")
             print(f"Extracted: {dst}")
 
 

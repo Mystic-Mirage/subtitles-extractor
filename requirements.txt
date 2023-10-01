@@ -1,0 +1,2 @@
+beautifulsoup4==4.12.2
+srt==3.5.3
