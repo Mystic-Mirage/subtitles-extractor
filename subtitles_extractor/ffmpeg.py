@@ -11,6 +11,7 @@ def save_subtitles(
     skip_srt=False,
     strip_formatting=False,
     langs=None,
+    forced_title=None,
 ):
     langs = langs or ["*"]
     ext_exclude = tuple(os.extsep + ext for ext in (EXT, "nfo", "txt"))
@@ -19,7 +20,7 @@ def save_subtitles(
         return
 
     print(f"Processing: {filename}")
-    subtitles = ffprobe.subtitles(filename)
+    subtitles = ffprobe.subtitles(filename, forced_title)
     if subtitles is None:
         return
 

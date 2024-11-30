@@ -9,7 +9,9 @@ from typing import Any, Dict, Optional
 from subtitles_extractor import EXT
 
 
-def subtitles(filename: str) -> Optional[Dict[int, Dict[str, Any]]]:
+def subtitles(
+    filename: str, forced_title: list[str]
+) -> Optional[Dict[int, Dict[str, Any]]]:
     proc = subprocess.run(
         [
             "ffprobe",
@@ -42,7 +44,8 @@ def subtitles(filename: str) -> Optional[Dict[int, Dict[str, Any]]]:
                 "language": tags.get("language", "und"),
                 "codec": stream["codec_name"],
                 "bitmap": "width" in stream,
-                "forced": bool(disposition["forced"]) or "forced" in title,
+                "forced": bool(disposition["forced"])
+                or any(t in title for t in ("forced", *(forced_title or ()))),
                 "sdh": bool(disposition["hearing_impaired"]) or "sdh" in title,
             }
         except KeyError:

@@ -14,6 +14,7 @@ def run(
     strip_formatting: bool,
     langs: list[str],
     data_dir: Path,
+    forced_title: list[str],
 ):
     cache_file = data_dir / "filelist.cache"
     p_hash = get_hash(forced, skip_srt, strip_formatting, langs)
@@ -32,7 +33,12 @@ def run(
 
         for file in sorted(files - cache):
             ffmpeg.save_subtitles(
-                file.name, forced, skip_srt, strip_formatting, langs
+                file.name,
+                forced,
+                skip_srt,
+                strip_formatting,
+                langs,
+                forced_title,
             )
 
         if cache != files:
@@ -52,6 +58,9 @@ def main():
     )
     langs = os.environ.get("SUBTITLES_EXTRACTOR_LANGUAGES", "*").split(";")
     data_dir = Path(os.environ.get("SUBTITLES_EXTRACTOR_DATA_DIR", "."))
+    forced_title = os.environ.get(
+        "SUBTITLES_EXTRACTOR_FORCED_TITLE", ""
+    ).split(";")
 
     try:
         run(
@@ -62,6 +71,7 @@ def main():
             strip_formatting,
             langs,
             data_dir,
+            forced_title,
         )
     except KeyboardInterrupt:
         pass
