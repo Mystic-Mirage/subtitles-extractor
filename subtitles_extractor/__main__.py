@@ -17,7 +17,7 @@ def run(
     forced_title: list[str],
 ):
     cache_file = data_dir / "filelist.cache"
-    p_hash = get_hash(forced, skip_srt, strip_formatting, langs)
+    p_hash = get_hash(forced, skip_srt, strip_formatting, langs, forced_title)
     cache = read_cache(cache_file, p_hash)
 
     while True:
